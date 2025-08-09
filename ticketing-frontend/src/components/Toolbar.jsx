@@ -1,12 +1,13 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { FaHome, FaUser } from 'react-icons/fa'
 import './Toolbar.css'
 import { useAuth0 } from '@auth0/auth0-react'
 
 export default function Toolbar() {
     const navigate = useNavigate()
-    const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
+    const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0()
+    const loc = useLocation()
 
     return (
         <header className="toolbar">
@@ -16,16 +17,33 @@ export default function Toolbar() {
             </div>
 
             <nav className="toolbar-nav">
-                <Link to="/">Tickets</Link>
-                <Link to="/create">Crea</Link>
+                <Link className={loc.pathname === '/' ? 'active' : ''} to="/">Tickets</Link>
+                <Link className={loc.pathname === '/create' ? 'active' : ''} to="/create">Crea</Link>
             </nav>
 
             <div className="toolbar-right">
-                <FaUser className="toolbar-icon" title="Profilo" onClick={() => navigate('/profile')} />
+                {/* Saluto utente se loggato */}
+                {isAuthenticated && (
+                    <span style={{ marginRight: 10 }}>Ciao, {user?.name || user?.email}</span>
+                )}
+
+                <FaUser
+                    className="toolbar-icon"
+                    title="Profilo"
+                    onClick={() => navigate('/profile')}
+                />
+
                 {isAuthenticated ? (
-                    <button className="btn" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>Logout</button>
+                    <button
+                        className="btn"
+                        onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                    >
+                        Logout
+                    </button>
                 ) : (
-                    <button className="btn" onClick={() => loginWithRedirect()}>Login</button>
+                    <button className="btn" onClick={() => loginWithRedirect()}>
+                        Login
+                    </button>
                 )}
             </div>
         </header>

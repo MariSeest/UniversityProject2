@@ -3,8 +3,16 @@ import GoBackButton from '../components/GoBackButton'
 import { useAuth0 } from '@auth0/auth0-react'
 
 export default function UserProfile() {
-    const { isAuthenticated, user } = useAuth0()
-    if (!isAuthenticated) return <p>Effettua il login dalla toolbar</p>
+    const { isAuthenticated, user, loginWithRedirect } = useAuth0()
+    if (!isAuthenticated) {
+        return (
+            <div className="page">
+                <GoBackButton />
+                <p>Non sei loggato.</p>
+                <button className="primary" onClick={()=>loginWithRedirect()}>Login</button>
+            </div>
+        )
+    }
 
     return (
         <div className="page">

@@ -8,7 +8,8 @@ export default function TicketList() {
 
     useEffect(()=>{ load() },[])
     async function load(){
-        const { data } = await axios.get('/api/tickets')
+        // ⬇⬇ URL completo
+        const { data } = await axios.get('http://localhost:8080/tickets')
         setTickets(data)
     }
 

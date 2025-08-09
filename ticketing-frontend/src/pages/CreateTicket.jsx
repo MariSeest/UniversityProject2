@@ -9,10 +9,17 @@ export default function CreateTicket() {
     const submit = async (e) => {
         e.preventDefault()
         setLoading(true)
-        await axios.post('/api/tickets', form)   // grazie al proxy -> http://localhost:8080/tickets
-        setLoading(false)
-        alert('Ticket creato!')
-        setForm({ title: '', description: '', priority: 'LOW', status: 'OPEN' })
+        try {
+            // ⬇⬇ URL completo
+            await axios.post('http://localhost:8080/tickets', form)
+            alert('Ticket creato!')
+            setForm({ title: '', description: '', priority: 'LOW', status: 'OPEN' })
+        } catch (err) {
+            console.error(err)
+            alert('Errore nel salvataggio')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
