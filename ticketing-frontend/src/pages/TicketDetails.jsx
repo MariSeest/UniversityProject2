@@ -4,13 +4,12 @@ import GoBackButton from '../components/GoBackButton'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-react'
 
-// 1) Base URL presa da variabile d'ambiente Vite (senza trailing slash).
-//    Imposta VITE_API_URL su Render (es: https://<tuo-backend>.onrender.com)
+
 const API_BASE_URL =
     (import.meta.env.VITE_API_URL || '').replace(/\/$/, '') ||
     'https://<INSERISCI-URL-BACKEND>.onrender.com'
 
-// 2) Istanza Axios centralizzata
+
 const api = axios.create({
     baseURL: API_BASE_URL,
     timeout: 15000,
