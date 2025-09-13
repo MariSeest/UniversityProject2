@@ -9,7 +9,7 @@ export default function TicketList() {
     useEffect(()=>{ load() },[])
     async function load(){
         // ⬇⬇ URL completo
-        const { data } = await axios.get('http://localhost:8080/tickets')
+        const { data } = await axios.get('https://universityproject2.onrender.com/tickets')
         setTickets(data)
     }
 

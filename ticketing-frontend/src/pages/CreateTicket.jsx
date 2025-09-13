@@ -11,7 +11,7 @@ export default function CreateTicket() {
         setLoading(true)
         try {
             // ⬇⬇ URL completo
-            await axios.post('http://localhost:8080/tickets', form)
+            await axios.post('https://universityproject2.onrender.com/tickets', form)
             alert('Ticket creato!')
             setForm({ title: '', description: '', priority: 'LOW', status: 'OPEN' })
         } catch (err) {
