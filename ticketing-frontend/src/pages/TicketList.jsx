@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../lib/api'; // <- client centralizzato
+import api from '../lib/api'
 
 export default function TicketList() {
     const [tickets, setTickets] = useState([]);
