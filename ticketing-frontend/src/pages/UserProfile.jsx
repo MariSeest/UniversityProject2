@@ -1,6 +1,7 @@
 import React from 'react'
 import GoBackButton from '../components/GoBackButton'
 import { useAuth0 } from '@auth0/auth0-react'
+import api from '../lib/api';
 
 export default function UserProfile() {
     const { isAuthenticated, user, loginWithRedirect } = useAuth0()

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import GoBackButton from '../components/GoBackButton';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import api from '../lib/api';
 
 // --- BASE URL sicura (se manca, usa il backend su Render) ---
 const fromEnv = import.meta.env?.VITE_API_URL;
