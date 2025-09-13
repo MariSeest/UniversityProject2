@@ -7,11 +7,9 @@ export default function CreateTicket() {
     const [loading, setLoading] = useState(false);
 
     async function wakeUpBackend() {
-        // piccolo ping per “risvegliare” l’istanza Render
         try {
-            await api.get('/tickets/ping', { timeout: 8000 }); // esiste nel tuo BE: ritorna "pong"
+            await api.get('/tickets/ping', { timeout: 8000 });
         } catch {
-            // ignora: serve solo a scaldare
         }
     }
 
@@ -20,7 +18,7 @@ export default function CreateTicket() {
         setLoading(true);
         try {
             await wakeUpBackend();
-            await api.post('/tickets', form, { timeout: 60000 }); // usa api condivisa
+            await api.post('/tickets', form, { timeout: 60000 });
             alert('Ticket creato!');
             setForm({ title: '', description: '', priority: 'LOW', status: 'OPEN' });
         } catch (err) {
