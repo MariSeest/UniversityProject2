@@ -9,11 +9,14 @@ import { useAuth0 } from '@auth0/auth0-react'
 
 function PrivateRoute({ children }) {
     const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
+
     if (isLoading) return <p>Loading…</p>
+
     if (!isAuthenticated) {
         loginWithRedirect()
         return <p>Redirecting to login…</p>
     }
+
     return children
 }
 
@@ -23,7 +26,14 @@ export default function App() {
             <Toolbar />
             <div className="page-container">
                 <Routes>
-                    <Route path="/" element={<TicketList />} />
+                    <Route
+                        path="/"
+                        element={
+                            <PrivateRoute>
+                                <TicketList />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route
                         path="/create"
                         element={
@@ -32,8 +42,22 @@ export default function App() {
                             </PrivateRoute>
                         }
                     />
-                    <Route path="/tickets/:id" element={<TicketDetails />} />
-                    <Route path="/profile" element={<UserProfile />} />
+                    <Route
+                        path="/tickets/:id"
+                        element={
+                            <PrivateRoute>
+                                <TicketDetails />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <PrivateRoute>
+                                <UserProfile />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>
