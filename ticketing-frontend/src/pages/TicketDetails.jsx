@@ -16,9 +16,9 @@ export default function TicketDetails() {
 
     async function load(){
         // ⬇⬇ URL completi
-        const t = await axios.get(`http://localhost:8080/tickets/${id}`)
+        const t = await axios.get(`https://universityproject2.onrender.com/tickets/${id}`)
         setTicket(t.data)
-        const c = await axios.get(`http://localhost:8080/tickets/${id}/comments`)
+        const c = await axios.get(`https://universityproject2.onrender.com/tickets/${id}/comments`)
         setTree(c.data)
     }
 
@@ -28,7 +28,7 @@ export default function TicketDetails() {
             loginWithRedirect()
             return
         }
-        await axios.post(`http://localhost:8080/tickets/${id}/comments`, {
+        await axios.post(`https://universityproject2.onrender.com/tickets/${id}/comments`, {
             content: newComment, parentId,
             author: user?.name || user?.email || 'Anon'
         })
@@ -38,7 +38,7 @@ export default function TicketDetails() {
 
     async function deleteComment(commentId){
         if(!confirm('Eliminare il commento?')) return
-        await axios.delete(`http://localhost:8080/tickets/${id}/comments/${commentId}`)
+        await axios.delete(`https://universityproject2.onrender.com/tickets/${id}/comments/${commentId}`)
         load()
     }
 
@@ -66,7 +66,7 @@ export default function TicketDetails() {
                                 <div>
                                     <button className="primary" onClick={async ()=>{
                                         if(!replyText.trim()) return
-                                        await axios.post(`http://localhost:8080/tickets/${id}/comments`, {
+                                        await axios.post(`https://universityproject2.onrender.com/tickets/${id}/comments`, {
                                             content: replyText, parentId: node.id,
                                             author: user?.name || user?.email || 'Anon'
                                         })
