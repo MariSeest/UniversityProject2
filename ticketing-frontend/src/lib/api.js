@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-export const API_BASE_URL = (
-    (import.meta.env.VITE_API_URL || 'https://berepositoryuniversityprojectjava.onrender.com')
-).replace(/\/$/, '');
+const base =
+    (import.meta.env?.VITE_API_URL || '').replace(/\/$/, '') ||
+    'https://berepositoryuniversityprojectjava.onrender.com';
 
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: base,
     timeout: 15000,
+    headers: { 'Content-Type': 'application/json' },
 });
 
 export default api;
