@@ -1,21 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GoBackButton from '../components/GoBackButton';
-import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import api from '../lib/api';
-
-// --- BASE URL sicura (se manca, usa il backend su Render) ---
-const fromEnv = import.meta.env?.VITE_API_URL;
-const API_BASE_URL = fromEnv ? fromEnv.replace(/\/$/, '') : 'https://berepositoryuniversityprojectjava.onrender.com';
-console.log('[TicketDetails] API_BASE_URL =', API_BASE_URL); // <-- rimuovi quando hai finito
-
-// Istanza axios condivisa
-const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 15000,
-    headers: { 'Content-Type': 'application/json' },
-});
 
 export default function TicketDetails() {
     const { id } = useParams();
@@ -26,44 +13,44 @@ export default function TicketDetails() {
     const [newComment, setNewComment] = useState('');
 
     useEffect(() => {
-        let cancelled = false;
+        const ac = new AbortController();
 
         async function load() {
             try {
                 const [tRes, cRes] = await Promise.all([
-                    api.get(`/tickets/${id}`),
-                    api.get(`/tickets/${id}/comments`),
+                    api.get(`/tickets/${id}`, { signal: ac.signal }),
+                    api.get(`/tickets/${id}/comments`, { signal: ac.signal }),
                 ]);
-                if (!cancelled) {
-                    setTicket(tRes.data);
-                    setTree(cRes.data || []);
-                }
+                setTicket(tRes.data);
+                setTree(Array.isArray(cRes.data) ? cRes.data : []);
             } catch (err) {
-                console.error(err);
-                if (!cancelled) alert('Errore nel caricamento del ticket o dei commenti');
+                if (err.name !== 'CanceledError' && err.name !== 'AbortError') {
+                    console.error(err);
+                    alert('Errore nel caricamento del ticket o dei commenti');
+                }
             }
         }
 
         if (id) load();
-        return () => { cancelled = true; };
+        return () => ac.abort();
     }, [id]);
 
     async function addComment(parentId = null) {
-        if (!newComment.trim()) return;
+        const content = newComment.trim();
+        if (!content) return;
         if (!isAuthenticated) {
             loginWithRedirect();
             return;
         }
         try {
             await api.post(`/tickets/${id}/comments`, {
-                content: newComment.trim(),
+                content,
                 parentId,
                 author: user?.name || user?.email || 'Anon',
             });
             setNewComment('');
-            // ricarica
             const c = await api.get(`/tickets/${id}/comments`);
-            setTree(c.data || []);
+            setTree(Array.isArray(c.data) ? c.data : []);
         } catch (err) {
             console.error(err);
             alert('Errore nel salvataggio del commento');
@@ -75,7 +62,7 @@ export default function TicketDetails() {
         try {
             await api.delete(`/tickets/${id}/comments/${commentId}`);
             const c = await api.get(`/tickets/${id}/comments`);
-            setTree(c.data || []);
+            setTree(Array.isArray(c.data) ? c.data : []);
         } catch (err) {
             console.error(err);
             alert('Errore nell’eliminazione del commento');
@@ -89,12 +76,12 @@ export default function TicketDetails() {
         return (
             <div style={{ borderLeft: '2px solid #e5e7eb', marginLeft: 12, paddingLeft: 12, marginTop: 8 }}>
                 <div className="row">
-                    <div style={{ fontWeight: 600 }}>{node.author || 'Anon'}</div>
+                    <div style={{ fontWeight: 600 }}>{node?.author || 'Anon'}</div>
                     <div style={{ marginLeft: 'auto', fontSize: 12, color: '#6b7280' }}>
-                        {node.createdAt ?? ''}
+                        {node?.createdAt ?? ''}
                     </div>
                 </div>
-                <div>{node.content}</div>
+                <div>{node?.content}</div>
                 <div className="row" style={{ gap: 8, marginTop: 4 }}>
                     <button className="go-back" onClick={() => setReplyOpen(v => !v)}>Rispondi</button>
                     <button className="go-back" onClick={() => deleteComment(node.id)}>Elimina</button>
@@ -128,7 +115,7 @@ export default function TicketDetails() {
                                                 setReplyText('');
                                                 setReplyOpen(false);
                                                 const c = await api.get(`/tickets/${id}/comments`);
-                                                setTree(c.data || []);
+                                                setTree(Array.isArray(c.data) ? c.data : []);
                                             } catch (err) {
                                                 console.error(err);
                                                 alert('Errore nel salvataggio della risposta');
@@ -143,7 +130,7 @@ export default function TicketDetails() {
                     </div>
                 )}
 
-                {(node.replies || []).map(r => (
+                {(node?.replies || []).map(r => (
                     <Node key={r.id} node={r} />
                 ))}
             </div>
@@ -156,10 +143,12 @@ export default function TicketDetails() {
         <div className="page">
             <GoBackButton />
             <h2>
-                {ticket.title}{' '}
-                <span className={`badge ${ticket.priority?.toLowerCase()}`}>{ticket.priority}</span>
+                {ticket?.title}{' '}
+                <span className={`badge ${ticket?.priority?.toLowerCase?.() || ''}`}>
+          {ticket?.priority}
+        </span>
             </h2>
-            <p>{ticket.description}</p>
+            <p>{ticket?.description}</p>
 
             <h3 style={{ marginTop: 24 }}>Commenti</h3>
             <div className="card">
